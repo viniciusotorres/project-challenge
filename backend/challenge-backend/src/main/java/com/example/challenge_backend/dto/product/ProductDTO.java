@@ -12,7 +12,6 @@ public record ProductDTO(
          * O id do produto.
          * O id do produto não pode ser nulo.
          */
-        @NotNull(message = "ID cannot be null")
         Long id,
 
         /**
