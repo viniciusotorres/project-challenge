@@ -2,10 +2,10 @@
 
 Este é o backend do projeto **Challenge**, desenvolvido com **Spring Boot**. Ele fornece uma API REST para a gestão de produtos, incluindo operações de criação, leitura, atualização e exclusão.
 
-## Requisitos
+## Versões
 
 - Java 17
-- Maven 3.6.0 ou superior
+- SpringBoot 3.3.4
 
 ## Dependências
 
