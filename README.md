@@ -1,2 +1,40 @@
-# project-challenge
-Aplicação web full-stack com backend em Spring Boot e banco H2 em memória, implementando CRUD de produtos com JPA, paginação, ordenação e busca. Frontend em Angular e Angular Material, com interface para CRUD e comunicação via HTTPClient.
+# Challenge Backend
+
+Este é o backend do projeto **Challenge**, desenvolvido com **Spring Boot**. Ele fornece uma API REST para a gestão de produtos, incluindo operações de criação, leitura, atualização e exclusão.
+
+## Requisitos
+
+- Java 17
+- Maven 3.6.0 ou superior
+
+## Dependências
+
+- Spring Boot Starter Data JPA: Para integração com o banco de dados.
+- Spring Boot Starter Web: Para criar a API REST.
+- H2 Database: Banco de dados em memória para desenvolvimento.
+- Lombok: Para reduzir o código boilerplate.
+- Spring Boot Starter Test: Para testes.
+- Spring Boot Starter Validation: Para validação de dados.
+- Springdoc OpenAPI: Para documentação da API.
+
+## Configuração
+
+Este projeto utiliza o banco de dados H2 em memória para desenvolvimento. Não é necessária nenhuma configuração adicional para rodar o projeto localmente.
+
+## Configuração CORS
+
+A configuração de CORS permite que o frontend se comunique com o backend. A configuração atual permite requisições do http://localhost:4200.
+
+### Clonar o Repositório
+
+git clone https://github.com/seu-usuario/challenge-backend.git
+cd challenge-backend
+
+## Executando o Projeto
+
+mvn spring-boot:run
+
+A aplicação estará disponível em http://localhost:8080.
+
+
+
