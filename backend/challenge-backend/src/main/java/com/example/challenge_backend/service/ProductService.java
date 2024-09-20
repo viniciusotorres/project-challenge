@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
@@ -44,6 +45,7 @@ public class ProductService {
      * ProductDTO facilita a transferência de dados entre camadas e mantém
      * a lógica de negócios separada da lógica de apresentação.
      */
+    @Transactional
     public ProductDTO create(@Valid ProductDTO productDTO) {
         try {
             Product product = new Product();
@@ -109,6 +111,7 @@ public class ProductService {
      * erros de entrada. A conversão para ProductDTO é feita para encapsular
      * os dados e garantir que apenas as informações necessárias sejam expostas.
      */
+    @Transactional
     public ProductDTO update(Long id, @Valid ProductDTO productDTO) {
         try {
             Product product = productRepository.findById(id)
