@@ -17,6 +17,10 @@ Este é o backend do projeto **Challenge**, desenvolvido com **Spring Boot**. El
 - Spring Boot Starter Validation: Para validação de dados.
 - Springdoc OpenAPI: Para documentação da API.
 
+## Documentação da API
+
+- A documentação da API está disponível em /swagger-ui.html após iniciar a aplicação.
+
 ## Configuração
 
 Este projeto utiliza o banco de dados H2 em memória para desenvolvimento. Não é necessária nenhuma configuração adicional para rodar o projeto localmente.
