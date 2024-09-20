@@ -27,14 +27,14 @@ A configuração de CORS permite que o frontend se comunique com o backend. A co
 
 ### Clonar o Repositório
 
-git clone https://github.com/seu-usuario/challenge-backend.git
-cd challenge-backend
+- git clone https://github.com/seu-usuario/challenge-backend.git
+- cd challenge-backend
 
 ## Executando o Projeto
 
-mvn spring-boot:run
+- mvn spring-boot:run
 
-A aplicação estará disponível em http://localhost:8080.
+- A aplicação estará disponível em http://localhost:8080.
 
 
 
