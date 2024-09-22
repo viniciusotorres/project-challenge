@@ -17,7 +17,7 @@
 
 # Execução
 
-- git clone <[URL_DO_REPOSITÓRIO](https://github.com/viniciusotorres/project-challenge/tree/main/frontend)>
+- git clone <[FRONT-END](https://github.com/viniciusotorres/project-challenge/tree/main/frontend)>
 - cd challenge-frontend
 - npm install
 - npm start
@@ -45,7 +45,7 @@ O backend é uma API REST construída com Spring Boot. Ele gerencia produtos e f
 
 #Execução
 
-- git clone https://github.com/seu-usuario/challenge-backend.git
+- git clone [BACK-END](https://github.com/viniciusotorres/project-challenge/tree/main/backend/challenge-backend)
 - cd challenge-backend
 - Execute a aplicação:
 - mvn spring-boot:run
