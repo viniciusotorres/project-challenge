@@ -1,0 +1,15 @@
+.image-upload {
+  @apply flex flex-col items-center gap-2.5;
+}
+
+.image-preview {
+  @apply w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden;
+}
+
+.image-preview img {
+  @apply w-full h-full object-cover;
+}
+
+.image-placeholder mat-icon {
+  @apply text-gray-500;
+}

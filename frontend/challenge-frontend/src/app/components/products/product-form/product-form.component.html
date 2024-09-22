@@ -1,1 +1,56 @@
-<p>product-form works!</p>
+<!-- DIV PAI DO FORMULÁRIO DE PRODUTOS -->
+<div class="px-4 py-4">
+  <!-- TÍTULO DO FORMULÁRIO -->
+  <h1 class="text-center">Adicionar Produto</h1>
+  <!-- FORMULÁRIO DE PRODUTOS -->
+  <form [formGroup]="productForm" class="flex flex-col gap-2.5">
+    <!-- CAMPO DE UPLOAD DE IMAGEM -->
+    <div class="image-upload flex flex-col items-center gap-2.5">
+      <input type="file" (change)="onFileSelected($event)" class="hidden" id="fileInput">
+      <label for="fileInput" class="cursor-pointer">
+        <div class="image-preview w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+          <img *ngIf="imageSrc" [src]="imageSrc" alt="Image Preview" class="w-full h-full object-cover">
+          <mat-icon *ngIf="!imageSrc" class="text-gray-500">photo_camera</mat-icon>
+        </div>
+      </label>
+      <mat-error *ngIf="productForm.get('image')?.hasError('required')">
+        Imagem é obrigatória
+      </mat-error>
+    </div>
+    <!-- CAMPO DE NOME COM VALIDAÇÃO -->
+    <mat-form-field>
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="name">
+      <mat-error *ngIf="productForm.get('name')?.hasError('required')">
+        Nome é obrigatório
+      </mat-error>
+      <mat-error *ngIf="productForm.get('name')?.hasError('minlength')">
+        Nome deve ter pelo menos 3 caracteres
+      </mat-error>
+    </mat-form-field>
+    <!-- CAMPO DE DESCRIÇÃO COM VALIDAÇÃO -->
+    <mat-form-field>
+      <mat-label>Descrição</mat-label>
+      <input matInput formControlName="description">
+      <mat-error *ngIf="productForm.get('description')?.hasError('required')">
+        Descrição é obrigatória
+      </mat-error>
+    </mat-form-field>
+    <!-- CAMPO DE PREÇO COM VALIDAÇÃO E MÁSCARA DE REAL-->
+    <mat-form-field>
+      <mat-label>Preço</mat-label>
+      <input matInput type="text" formControlName="price" (input)="formatCurrency($event)">
+      <mat-error *ngIf="productForm.get('price')?.hasError('required')">
+        Preço é obrigatório
+      </mat-error>
+      <mat-error *ngIf="productForm.get('price')?.hasError('min')">
+        Preço deve ser maior ou igual a 0
+      </mat-error>
+    </mat-form-field>
+    <!-- CAMPO DE QUANTIDADE COM VALIDAÇÃO -->
+    <div mat-dialog-actions>
+      <button mat-button (click)="closeDialog()">Cancelar</button>
+      <button mat-button [disabled]="productForm.invalid" (click)="saveProduct()">Salvar</button>
+    </div>
+  </form>
+</div>

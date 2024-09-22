@@ -3,3 +3,38 @@
 @tailwind utilities;
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-mdc-header-cell {
+  text-align: center !important;
+}
+
+.mdc-data-table__cell {
+  text-align: center !important;
+}
+
+.mat-mdc-snack-bar-container.success-snackbar .mat-mdc-snackbar-surface {
+  color: white !important;
+  background-color: #4caf50 !important;
+}
+
+.mat-mdc-snack-bar-container.error-snackbar .mat-mdc-snackbar-surface {
+  color: white !important;
+  background-color: #f44336 !important;
+}
+
+.mat-mdc-snack-bar-container.warning-snackbar .mat-mdc-snackbar-surface {
+  color: white !important;
+  background-color: #ff9800 !important;
+}
+
+.mat-mdc-snack-bar-container.success-snackbar .mat-mdc-button.mat-mdc-snack-bar-action:not(:disabled) {
+  color: #ffffff !important;
+}
+
+.mat-mdc-snack-bar-container.error-snackbar .mat-mdc-button.mat-mdc-snack-bar-action:not(:disabled) {
+  color: #ffffff !important;
+}
+
+.mat-mdc-snack-bar-container.warning-snackbar .mat-mdc-button.mat-mdc-snack-bar-action:not(:disabled) {
+  color: #ffffff !important;;
+}
