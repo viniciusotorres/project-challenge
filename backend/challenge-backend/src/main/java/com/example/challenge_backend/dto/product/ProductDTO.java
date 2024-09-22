@@ -39,9 +39,9 @@ public record ProductDTO(
         String description,
 
         /**
-         * A URL da imagem do produto.
-         * A URL da imagem do produto deve ser válida.
+         * O nome do arquivo da imagem do produto.
+         * O nome do arquivo da imagem do produto não pode ser vazio.
          */
-        @Pattern(regexp = "^(http|https)://.*$", message = "Image must be a valid URL")
+        @NotBlank(message = "Image cannot be empty")
         String image
 ) {}
