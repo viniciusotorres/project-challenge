@@ -1,9 +1,7 @@
 ## Challenge Project
 - Este projeto é uma aplicação full-stack chamada Challenge, que consiste em um frontend desenvolvido com Angular e um backend desenvolvido com Spring Boot. A aplicação permite a gestão de produtos, com operações de criação, leitura, atualização e exclusão.
 
-## Challenge Frontend
-
-# Descrição
+# Descrição Front-End
 - O frontend é uma aplicação Angular que utiliza uma interface moderna e responsiva. Ele se comunica com o backend via API REST.
 
 ## Dependências
@@ -25,9 +23,9 @@
 - npm start
 - A aplicação estará disponível em http://localhost:4200.
 
-## Challenge Backend
 
-# Descrição
+
+# Descrição Back-End
 
 O backend é uma API REST construída com Spring Boot. Ele gerencia produtos e fornece endpoints para operações CRUD.
 
@@ -67,4 +65,11 @@ O backend é uma API REST construída com Spring Boot. Ele gerencia produtos e f
 
 - cd challenge-frontend
 - npm start
+  
 ## Agora, o frontend estará disponível em http://localhost:4200 e se comunicará com o backend disponível em http://localhost:8080.
+
+# Desafios Extras feitos
+
+- Criar uma barra de notificações (snackbar) que aparece ao salvar, atualizar
+ou excluir um produto.
+- Documentação da API utilizando Swagger.
