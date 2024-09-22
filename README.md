@@ -1,44 +1,70 @@
-# Challenge Backend
+## Challenge Project
+- Este projeto é uma aplicação full-stack chamada Challenge, que consiste em um frontend desenvolvido com Angular e um backend desenvolvido com Spring Boot. A aplicação permite a gestão de produtos, com operações de criação, leitura, atualização e exclusão.
 
-Este é o backend do projeto **Challenge**, desenvolvido com **Spring Boot**. Ele fornece uma API REST para a gestão de produtos, incluindo operações de criação, leitura, atualização e exclusão.
+## Challenge Frontend
 
-## Versões
-
-- Java 17
-- SpringBoot 3.3.4
+# Descrição
+- O frontend é uma aplicação Angular que utiliza uma interface moderna e responsiva. Ele se comunica com o backend via API REST.
 
 ## Dependências
 
-- Spring Boot Starter Data JPA: Para integração com o banco de dados.
+- @angular/material: Componentes de UI do Angular Material.
+- tailwindcss: Framework CSS para estilização.
+
+
+## Scripts
+
+- start: Inicia o servidor de desenvolvimento (ng serve).
+- build: Compila o projeto para produção (ng build).
+
+# Execução
+
+- git clone <[URL_DO_REPOSITÓRIO](https://github.com/viniciusotorres/project-challenge/tree/main/frontend)>
+- cd challenge-frontend
+- npm install
+- npm start
+- A aplicação estará disponível em http://localhost:4200.
+
+## Challenge Backend
+
+# Descrição
+
+O backend é uma API REST construída com Spring Boot. Ele gerencia produtos e fornece endpoints para operações CRUD.
+
+# Dependências
+
+- Spring Boot Starter Data JPA: Integração com o banco de dados.
 - Spring Boot Starter Web: Para criar a API REST.
 - H2 Database: Banco de dados em memória para desenvolvimento.
-- Lombok: Para reduzir o código boilerplate.
-- Spring Boot Starter Test: Para testes.
-- Spring Boot Starter Validation: Para validação de dados.
-- Springdoc OpenAPI: Para documentação da API.
+- Lombok: Reduz código boilerplate.
+- Springdoc OpenAPI: Documentação da API.
+  
+# Configuração
+- O projeto utiliza o banco de dados H2 em memória, sem necessidade de configuração adicional para rodar localmente.
 
-## Configuração
+# Configuração CORS
+- Permite que o frontend se comunique com o backend. A configuração atual permite requisições do http://localhost:4200.
 
-Este projeto utiliza o banco de dados H2 em memória para desenvolvimento. Não é necessária nenhuma configuração adicional para rodar o projeto localmente.
-
-## Configuração CORS
-
-A configuração de CORS permite que o frontend se comunique com o backend. A configuração atual permite requisições do http://localhost:4200.
-
-### Clonar o Repositório
+#Execução
 
 - git clone https://github.com/seu-usuario/challenge-backend.git
 - cd challenge-backend
-
-## Executando o Projeto
-
+- Execute a aplicação:
 - mvn spring-boot:run
-
 - A aplicação estará disponível em http://localhost:8080.
 
 ## Documentação da API
+- A documentação da API pode ser acessada em /swagger-ui.html após iniciar a aplicação.
 
-- A documentação da API está disponível em /swagger-ui.html após iniciar a aplicação.
+# Execução Conjunta
 
+# Inicie o backend (Spring Boot):
 
+- cd challenge-backend
+- mvn spring-boot:run
+  
+# Inicie o frontend (Angular):
 
+- cd challenge-frontend
+- npm start
+## Agora, o frontend estará disponível em http://localhost:4200 e se comunicará com o backend disponível em http://localhost:8080.
