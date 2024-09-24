@@ -28,6 +28,7 @@ public record ProductDTO(
          */
         @NotNull(message = "Price cannot be null")
         @Min(value = 0, message = "Price cannot be negative")
+        @Max(value = 10000, message = "Price cannot be greater than 10000")
         BigDecimal price,
 
         /**
@@ -42,6 +43,6 @@ public record ProductDTO(
          * O nome do arquivo da imagem do produto.
          * O nome do arquivo da imagem do produto não pode ser vazio.
          */
-        @NotBlank(message = "Image cannot be empty")
-        String image
+        @NotNull(message = "Image cannot be empty")
+        byte[] image
 ) {}
