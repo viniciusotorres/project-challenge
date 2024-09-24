@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,15 +44,12 @@ public class ProductController {
             @RequestParam("name") String name,
             @RequestParam("price") BigDecimal price,
             @RequestParam("description") String description,
-            @RequestParam("image") MultipartFile image) {
-        try {
-            ProductDTO productDTO = convertToProductDTO(name, price, description, image);
-            ProductDTO createdProduct = productService.create(productDTO);
-            URI location = URI.create("/api/products/" + createdProduct.id());
-            return ResponseEntity.created(location).body(createdProduct);
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().build();
-        }
+            @RequestParam("image") MultipartFile image) throws IOException {
+
+        ProductDTO productDTO = convertToProductDTO(name, price, description, image);
+        ProductDTO createdProduct = productService.create(productDTO);
+        URI location = URI.create("/api/products/" + createdProduct.id());
+        return ResponseEntity.created(location).body(createdProduct);
     }
 
     /**
@@ -87,15 +85,27 @@ public class ProductController {
      * Atualiza um produto existente.
      *
      * @param id         o ID do produto a ser atualizado
-     * @param productDTO os dados atualizados do produto
      * @return resposta com o produto atualizado e mensagem de sucesso
      */
     @PutMapping("/products/{id}")
-    public ResponseEntity<ResponseProductDTO> update(@PathVariable Long id, @Valid @RequestBody ProductDTO productDTO) {
+    public ResponseEntity<ResponseProductDTO> update(
+            @PathVariable("id") Long id,
+            @RequestParam("name") String name,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("description") String description,
+            @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
+
+        ProductDTO existingProduct = productService.findById(id);
+        byte[] imageBytes = existingProduct.image();
+
+        if (image != null && !Arrays.equals(image.getBytes(), imageBytes)) {
+            imageBytes = image.getBytes();
+        }
+
+        ProductDTO productDTO = new ProductDTO(id, name, price, description, imageBytes);
         ProductDTO updatedProduct = productService.update(id, productDTO);
         return ResponseEntity.ok(new ResponseProductDTO(updatedProduct, "Produto atualizado com sucesso"));
     }
-
     /**
      * Deleta um produto pelo ID.
      *
