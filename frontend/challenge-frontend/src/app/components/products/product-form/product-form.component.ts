@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -6,16 +6,16 @@ import {
   MatDialogRef,
   MatDialogTitle
 } from "@angular/material/dialog";
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {CommonModule} from "@angular/common";
-import {MatFormFieldModule, MatLabel} from "@angular/material/form-field";
-import {MatInputModule} from "@angular/material/input";
-import {MatButtonModule} from "@angular/material/button";
-import {MatIcon, MatIconModule} from "@angular/material/icon";
-import {ProductService} from "../../../core/services/product/product.service";
-import {Product} from "../../../shared/interfaces/product.interface";
-import {Observable} from "rxjs";
-import {NotificationService} from "../../../core/services/notification/notification.service";
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+import { CommonModule } from "@angular/common";
+import { MatFormFieldModule, MatLabel } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
+import { ProductService } from "../../../core/services/product/product.service";
+import { Product } from "../../../shared/interfaces/product.interface";
+import { Observable } from "rxjs";
+import { NotificationService } from "../../../core/services/notification/notification.service";
 
 @Component({
   selector: 'app-product-form',
@@ -36,18 +36,25 @@ import {NotificationService} from "../../../core/services/notification/notificat
   templateUrl: './product-form.component.html',
   styleUrl: './product-form.component.scss'
 })
-/**
- * Componente responsável por exibir o formulário de produto.
- * @constructor
- * @param fb
- * @param dialogRef
- * @param data
- */
 export class ProductFormComponent implements OnInit {
+  /** @type {boolean} Indica se o formulário está em modo de edição */
+  isEditMode: boolean = false;
+  /** @type {FormGroup} Formulário do produto */
   productForm!: FormGroup;
+  /** @type {string} Nome do arquivo selecionado */
   fileName = '';
+  /** @type {string | ArrayBuffer | null} Fonte da imagem a ser exibida */
   imageSrc: string | ArrayBuffer | null = null;
+  /** @type {File | null} Arquivo selecionado */
+  selectedFile: File | null = null;
 
+  /**
+   * Construtor do ProductFormComponent
+   * @param {ProductService} productService - Serviço para manipulação de produtos
+   * @param {FormBuilder} fb - Serviço de construção de formulários
+   * @param {MatDialogRef<ProductFormComponent>} dialogRef - Referência ao diálogo
+   * @param {any} data - Dados passados para o diálogo
+   */
   constructor(
     private productService: ProductService,
     private fb: FormBuilder,
@@ -56,28 +63,29 @@ export class ProductFormComponent implements OnInit {
   }
 
   /**
-   * Método responsável por inicializar o componente.
+   * Hook de ciclo de vida chamado após a inicialização das propriedades ligadas a dados
    */
   ngOnInit(): void {
     this.initializeForm();
     this.setImageSrc();
+    this.isEditMode = !!this.data.product;
   }
 
   /**
-   * Método responsável por inicializar o formulário.
+   * Inicializa o formulário do produto
    * @private
    */
   private initializeForm(): void {
     this.productForm = this.fb.group({
       name: [this.data.product?.name || '', [Validators.required, Validators.minLength(3)]],
       description: [this.data.product?.description || '', Validators.required],
-      price: [this.data.product?.price || 0, [Validators.required, Validators.min(0)]],
-      image: [this.data.product?.image || '', Validators.required]
+      price: [this.data.product?.price || 0.01, [Validators.required, Validators.min(0)]],
+      image: [this.data.product?.image || null, Validators.required]
     });
   }
 
   /**
-   * Método responsável por definir a fonte da imagem.
+   * Define a fonte da imagem se o produto tiver uma imagem
    * @private
    */
   private setImageSrc(): void {
@@ -86,13 +94,13 @@ export class ProductFormComponent implements OnInit {
     }
   }
 
-
   /**
-   * Método responsável por selecionar o arquivo.
-   * @param event
+   * Manipula o evento de seleção de arquivo
+   * @param {Event} event - Evento de seleção de arquivo
    */
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
+    this.isEditMode = false;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       this.handleFileSelection(file);
@@ -100,19 +108,20 @@ export class ProductFormComponent implements OnInit {
   }
 
   /**
-   * Método responsável por lidar com a seleção do arquivo.
-   * @param file
+   * Manipula o arquivo selecionado
+   * @param {File} file - Arquivo selecionado
    * @private
    */
   private handleFileSelection(file: File): void {
     this.fileName = file.name;
-    this.productForm.patchValue({ image: this.fileName });
+    this.selectedFile = file;
+    this.productForm.patchValue({ image: file });
     this.readFile(file);
   }
 
   /**
-   * Método responsável por ler o arquivo selecionado.
-   * @param file
+   * Lê o arquivo selecionado e define a fonte da imagem
+   * @param {File} file - Arquivo selecionado
    * @private
    */
   private readFile(file: File): void {
@@ -123,39 +132,54 @@ export class ProductFormComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
-
   /**
-   * Método responsável por fechar o dialog.
+   * Fecha o diálogo
    */
   closeDialog() {
     this.dialogRef.close();
   }
 
   /**
-   * Método responsável por salvar o produto.
+   * Salva o produto
    */
   saveProduct(): void {
     if (this.productForm.valid) {
-      const formValue = this.prepareFormValue();
-      const saveOperation = this.data.product ? this.updateExistingProduct(formValue) : this.createNewProduct(formValue);
+      const formData = this.prepareFormValue();
+      const saveOperation = this.data.product ? this.updateExistingProduct(formData) : this.createNewProduct(formData);
 
-      saveOperation.subscribe(() => this.dialogRef.close(formValue));
+      saveOperation.subscribe(() => this.dialogRef.close(formData));
     }
   }
+
   /**
-   * Método responsável por preparar o valor do formulário.
+   * Prepara o valor do formulário para ser enviado ao servidor
+   * @returns {FormData} Dados do formulário a serem enviados ao servidor
    * @private
    */
-  private prepareFormValue(): Product {
+  private prepareFormValue(): FormData {
     const formValue: Product = { ...this.productForm.value };
     formValue.price = this.parsePrice(formValue.price);
     if (this.data.product) formValue.id = this.data.product.id;
-    return formValue;
+
+    const formData = new FormData();
+    formData.append('name', formValue.name);
+    formData.append('description', formValue.description);
+    formData.append('price', formValue.price.toString());
+    if (this.selectedFile) {
+      formData.append('image', this.selectedFile);
+    }
+
+    if (formValue.id) {
+      formData.append('id', formValue.id.toString());
+    }
+
+    return formData;
   }
 
   /**
-   * Método responsável por converter o preço para número.
-   * @param price
+   * Converte o preço para um número
+   * @param {string | number} price - Preço a ser convertido
+   * @returns {number} Preço convertido
    * @private
    */
   private parsePrice(price: string | number): number {
@@ -163,37 +187,48 @@ export class ProductFormComponent implements OnInit {
   }
 
   /**
-   * Método responsável por atualizar um produto existente.
-   * @param product
+   * Atualiza um produto existente
+   * @param {FormData} formData - Dados do formulário a serem enviados ao servidor
+   * @returns {Observable<any>} Observable para a operação de atualização
    * @private
    */
-  private updateExistingProduct(product: Product): Observable<Product> {
-    return this.productService.updateProduct(product);
+  private updateExistingProduct(formData: FormData): Observable<any> {
+    return this.productService.updateProduct(formData);
   }
 
   /**
-   * Método responsável por criar um novo produto.
-   * @param product
+   * Cria um novo produto
+   * @param {FormData} formData - Dados do formulário a serem enviados ao servidor
+   * @returns {Observable<any>} Observable para a operação de criação
    * @private
    */
-  private createNewProduct(product: Product): Observable<Product> {
-    return this.productService.createProduct(product);
+  private createNewProduct(formData: FormData): Observable<any> {
+    return this.productService.createProduct(formData);
   }
+
   /**
-   * Método responsável por formatar o valor do input de preço.
-   * @param event
+   * Formata a entrada de moeda
+   * @param {Event} event - Evento de entrada
    */
   formatCurrency(event: Event): void {
     const input = event.target as HTMLInputElement;
 
-    let value = input.value.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
+    let value = input.value.replace(/\D/g, '');
 
-    value = (Number(value) / 100).toFixed(2); // Divide por 100 para obter o valor correto
+    let numericValue = Number(value) / 100;
 
-    value = value.replace('.', ','); // Substitui o ponto pela vírgula
+    if (numericValue <= 0) {
+      numericValue = 0.01;
+    } else if (numericValue > 10000) {
+      numericValue = 10000;
+    }
 
-    value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Adiciona o separador de milhar
+    value = numericValue.toFixed(2);
 
-    this.productForm.patchValue({ price: `R$ ${value}` }); // Atualiza o valor do form control
+    value = value.replace('.', ',');
+
+    value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    this.productForm.patchValue({ price: `R$ ${value}` });
   }
 }
