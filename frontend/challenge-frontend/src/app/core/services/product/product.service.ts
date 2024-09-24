@@ -56,14 +56,14 @@ export class ProductService {
 
   /**
    * Método responsável por criar um produto.
-   * @param product
    * @returns Observable<Product>
    *    Observable com o produto criado.
    *    Caso ocorra um erro, retorna um Observable com o erro.
    *    Em ambos os casos, exibe uma notificação.
+   * @param formData
    */
-  createProduct(product: Product): Observable<Product> {
-    return this.http.post<Product>(`${this.url}/products`, product).pipe(
+  createProduct(formData: FormData): Observable<any> {
+    return this.http.post(`${this.url}/products`, formData).pipe(
       tap(() => this.notificationService.showSuccess('Produto criado com sucesso')),
       catchError(error => {
         const errorMessage = `Falha ao criar produto: ${error.status} - ${error.message}`;
@@ -75,14 +75,14 @@ export class ProductService {
 
   /**
    * Método responsável por atualizar um produto.
-   * @param product
    * @returns Observable<Product>
    *   Observable com o produto atualizado.
    *   Caso ocorra um erro, retorna um Observable com o erro.
    *   Em ambos os casos, exibe uma notificação.
+   * @param formData
    */
-  updateProduct(product: Product): Observable<Product> {
-    return this.http.put<Product>(`${this.url}/products/${product.id}`, product).pipe(
+  updateProduct(formData: FormData): Observable<any> {
+    return this.http.put(`${this.url}/products/update`, formData).pipe(
       tap(() => this.notificationService.showSuccess('Produto atualizado com sucesso')),
       catchError(error => {
         const errorMessage = `Falha ao atualizar produto: ${error.status} - ${error.message}`;

@@ -81,6 +81,16 @@ export class TableComponent {
         width: '800px',
         data: { product: fetchedProduct }
       });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          const page = 0
+          const size = 10
+          this.productService.getProducts(page, size).subscribe(response => {
+            this.dataSource.data = response.content;
+          });
+        }
+      });
     });
   }
 

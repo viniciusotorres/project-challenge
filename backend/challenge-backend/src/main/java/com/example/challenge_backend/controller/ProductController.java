@@ -9,12 +9,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 
 /**
- * Controller responsável pela gestão dos produtos.
+ * Controlador responsável pela gestão dos produtos.
  * Este controlador lida com as requisições relacionadas a produtos,
  * incluindo operações de criação, leitura, atualização e exclusão.
  */
@@ -29,20 +32,32 @@ public class ProductController {
     /**
      * Cria um novo produto.
      *
-     * @param productDTO objeto com os dados do produto a ser criado
+     * @param name        o nome do produto
+     * @param price       o preço do produto
+     * @param description a descrição do produto
+     * @param image       a imagem do produto
      * @return resposta com o produto criado e sua URI
      */
     @PostMapping("/products")
-    public ResponseEntity<ProductDTO> create(@Valid @RequestBody ProductDTO productDTO) {
-        ProductDTO createdProduct = productService.create(productDTO);
-        URI location = URI.create("/api/products/" + createdProduct.id());
-        return ResponseEntity.created(location).body(createdProduct);
+    public ResponseEntity<ProductDTO> create(
+            @RequestParam("name") String name,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("description") String description,
+            @RequestParam("image") MultipartFile image) {
+        try {
+            ProductDTO productDTO = convertToProductDTO(name, price, description, image);
+            ProductDTO createdProduct = productService.create(productDTO);
+            URI location = URI.create("/api/products/" + createdProduct.id());
+            return ResponseEntity.created(location).body(createdProduct);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /**
      * Busca um produto pelo ID.
      *
-     * @param id ID do produto
+     * @param id o ID do produto
      * @return resposta com o produto encontrado
      */
     @GetMapping("/products/{id}")
@@ -54,16 +69,16 @@ public class ProductController {
     /**
      * Busca todos os produtos com paginação e ordenação.
      *
-     * @param page número da página
-     * @param size número de itens por página
-     * @param sort critério de ordenação
+     * @param page o número da página
+     * @param size o número de itens por página
+     * @param sort o critério de ordenação
      * @return resposta com a lista de produtos
      */
     @GetMapping("/products")
     public ResponseEntity<Page<ProductDTO>> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sort) {
+            @RequestParam(defaultValue = "name") String sort) {
         Page<ProductDTO> products = productService.findAll(page, size, sort);
         return ResponseEntity.ok(products);
     }
@@ -71,8 +86,8 @@ public class ProductController {
     /**
      * Atualiza um produto existente.
      *
-     * @param id ID do produto a ser atualizado
-     * @param productDTO dados do produto atualizados
+     * @param id         o ID do produto a ser atualizado
+     * @param productDTO os dados atualizados do produto
      * @return resposta com o produto atualizado e mensagem de sucesso
      */
     @PutMapping("/products/{id}")
@@ -84,7 +99,7 @@ public class ProductController {
     /**
      * Deleta um produto pelo ID.
      *
-     * @param id ID do produto a ser deletado
+     * @param id o ID do produto a ser deletado
      * @return resposta sem conteúdo, indicando sucesso na exclusão
      */
     @DeleteMapping("/products/{id}")
@@ -96,12 +111,22 @@ public class ProductController {
     /**
      * Busca produtos pelo nome.
      *
-     * @param query string de pesquisa
+     * @param query a string de pesquisa
      * @return resposta com a lista de produtos que correspondem à pesquisa
      */
     @GetMapping("/products/search")
     public ResponseEntity<List<ProductDTO>> search(@RequestParam String query) {
         List<ProductDTO> products = productService.search(query);
         return ResponseEntity.ok(products);
+    }
+
+    private ProductDTO convertToProductDTO(String name, BigDecimal price, String description, MultipartFile image) throws IOException {
+        return new ProductDTO(
+                null,
+                name,
+                price,
+                description,
+                image.getBytes()
+        );
     }
 }

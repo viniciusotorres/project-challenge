@@ -1,9 +1,6 @@
 package com.example.challenge_backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,6 +42,7 @@ public class Product {
      */
     @NotNull(message = "Price cannot be null")
     @Min(value = 0, message = "Price cannot be negative")
+    @Max(value = 10000, message = "Price cannot be greater than 10000")
     private BigDecimal price;
 
     /**
@@ -59,7 +57,8 @@ public class Product {
      * O nome do arquivo da imagem do produto.
      * O nome do arquivo da imagem do produto não pode ser vazio.
      */
-    @NotBlank(message = "Image cannot be empty")
-    private String image;
+    @Lob
+    @NotNull(message = "Image cannot be empty")
+    private byte[] image;
 
 }

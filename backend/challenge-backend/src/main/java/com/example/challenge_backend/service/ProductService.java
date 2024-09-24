@@ -164,7 +164,7 @@ public class ProductService {
      */
     public List<ProductDTO> search(String query) {
         try {
-            List<Product> products = productRepository.findByNameContaining(query);
+            List<Product> products = productRepository.findByNameContainingIgnoreCase(query);
             return products.stream()
                     .map(this::mapToDTO)
                     .collect(Collectors.toList());
