@@ -8,42 +8,46 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
-/*
-* O serviço é responsável por realizar a lógica de negócio da aplicação.
-* Ele é responsável por realizar a comunicação entre o controlador e o repositório.
-* O serviço é responsável por realizar a validação dos dados, tratamento de exceções e regras de negócio.
+
+/**
+ * O serviço é responsável por realizar a lógica de negócio da aplicação.
+ * Ele é responsável por realizar a comunicação entre o controlador e o repositório.
+ * O serviço é responsável por realizar a validação dos dados, tratamento de exceções e regras de negócio.
  */
 @Service
 public class ProductService {
 
-    /*
-        * O logger é utilizado para registrar informações, avisos e erros.
-        * Ele é útil para rastrear o comportamento da aplicação e depurar problemas.
+    /**
+     * O logger é utilizado para registrar informações, avisos e erros.
+     * Ele é útil para rastrear o comportamento da aplicação e depurar problemas.
      */
     private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
-    /*
-        * O repositório é utilizado para realizar operações de persistência no banco de dados.
+    /**
+     * O repositório é utilizado para realizar operações de persistência no banco de dados.
      */
     @Autowired
     private ProductRepository productRepository;
 
-    /*
-     * Este método cria um novo produto com base nos dados fornecidos.
-     * A validação é feita para garantir que os dados estão corretos antes de
-     * persistir no banco de dados, minimizando erros de entrada. O uso de
-     * ProductDTO facilita a transferência de dados entre camadas e mantém
-     * a lógica de negócios separada da lógica de apresentação.
+    /**
+     * Cria um novo produto com base nos dados fornecidos.
+     * A validação é feita para garantir que os dados estão corretos antes de persistir no banco de dados, minimizando erros de entrada.
+     * O uso de ProductDTO facilita a transferência de dados entre camadas e mantém a lógica de negócios separada da lógica de apresentação.
+     *
+     * @param productDTO os dados do produto a ser criado
+     * @return o produto criado
      */
     @Transactional
     public ProductDTO create(@Valid ProductDTO productDTO) {
@@ -59,18 +63,10 @@ public class ProductService {
             return mapToDTO(savedProduct);
         } catch (Exception e) {
             logger.error("Error creating product: {}", e.getMessage());
-            throw new RuntimeException("Failed to create product");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to create product", e);
         }
     }
 
-    /*
-     * O método busca um produto pelo ID fornecido.
-     * Utiliza uma exceção customizada para lidar com casos em que o produto
-     * não é encontrado, o que permite ao controlador retornar respostas
-     * apropriadas para o cliente. A conversão para ProductDTO é feita para
-     * encapsular os dados e garantir que apenas as informações necessárias
-     * sejam expostas.
-     */
     public ProductDTO findById(Long id) {
         try {
             Product product = productRepository.findById(id)
@@ -78,18 +74,22 @@ public class ProductService {
             return mapToDTO(product);
         } catch (ResourceNotFoundException e) {
             logger.error("Error finding product: {}", e.getMessage());
-            throw e;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         } catch (Exception e) {
             logger.error("Error finding product: {}", e.getMessage());
-            throw new RuntimeException("Failed to find product");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to find product", e);
         }
     }
 
-    /*
-     * O método busca todos os produtos no banco de dados.
-     * Utiliza paginação para lidar com grandes conjuntos de dados e ordenação
-     * para permitir a classificação dos resultados. A conversão para ProductDTO
-     * é feita para garantir que apenas as informações necessárias sejam expostas.
+    /**
+     * Busca todos os produtos no banco de dados.
+     * Utiliza paginação para lidar com grandes conjuntos de dados e ordenação para permitir a classificação dos resultados.
+     * A conversão para ProductDTO é feita para garantir que apenas as informações necessárias sejam expostas.
+     *
+     * @param page o número da página
+     * @param size o número de itens por página
+     * @param sort o critério de ordenação
+     * @return uma página de produtos
      */
     public Page<ProductDTO> findAll(int page, int size, String sort) {
         try {
@@ -98,18 +98,19 @@ public class ProductService {
             return productsPage.map(this::mapToDTO);
         } catch (Exception e) {
             logger.error("Error retrieving products: {}", e.getMessage());
-            throw new RuntimeException("Failed to retrieve products");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve products", e);
         }
     }
 
-    /*
+    /**
      * Atualiza um produto com base no ID fornecido e nos dados fornecidos.
-     * Utiliza uma exceção customizada para lidar com casos em que o produto
-     * não é encontrado, o que permite ao controlador retornar respostas
-     * apropriadas para o cliente. A validação é feita para garantir que os
-     * dados estão corretos antes de persistir no banco de dados, minimizando
-     * erros de entrada. A conversão para ProductDTO é feita para encapsular
-     * os dados e garantir que apenas as informações necessárias sejam expostas.
+     * Utiliza uma exceção customizada para lidar com casos em que o produto não é encontrado, o que permite ao controlador retornar respostas apropriadas para o cliente.
+     * A validação é feita para garantir que os dados estão corretos antes de persistir no banco de dados, minimizando erros de entrada.
+     * A conversão para ProductDTO é feita para encapsular os dados e garantir que apenas as informações necessárias sejam expostas.
+     *
+     * @param id o ID do produto a ser atualizado
+     * @param productDTO os dados atualizados do produto
+     * @return o produto atualizado
      */
     @Transactional
     public ProductDTO update(Long id, @Valid ProductDTO productDTO) {
@@ -127,18 +128,18 @@ public class ProductService {
             return mapToDTO(updatedProduct);
         } catch (ResourceNotFoundException e) {
             logger.error("Error updating product: {}", e.getMessage());
-            throw e;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         } catch (Exception e) {
             logger.error("Error updating product: {}", e.getMessage());
-            throw new RuntimeException("Failed to update product");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update product", e);
         }
     }
 
-    /*
+    /**
      * Deleta um produto com base no ID fornecido.
-     * Utiliza uma exceção customizada para lidar com casos em que o produto
-     * não é encontrado, o que permite ao controlador retornar respostas
-     * apropriadas para o cliente.
+     * Utiliza uma exceção customizada para lidar com casos em que o produto não é encontrado, o que permite ao controlador retornar respostas apropriadas para o cliente.
+     *
+     * @param id o ID do produto a ser deletado
      */
     public void delete(Long id) {
         try {
@@ -148,19 +149,20 @@ public class ProductService {
             logger.info("Product deleted with ID: {}", id);
         } catch (ResourceNotFoundException e) {
             logger.error("Error deleting product: {}", e.getMessage());
-            throw e;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         } catch (Exception e) {
             logger.error("Error deleting product: {}", e.getMessage());
-            throw new RuntimeException("Failed to delete product");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to delete product", e);
         }
     }
 
-    /*
+    /**
      * Busca produtos com base em uma consulta fornecida.
-     * Utiliza uma exceção genérica para lidar com erros inesperados, o que
-     * permite ao controlador retornar respostas apropriadas para o cliente.
-     * A conversão para ProductDTO é feita para encapsular os dados e garantir
-     * que apenas as informações necessárias sejam expostas.
+     * Utiliza uma exceção genérica para lidar com erros inesperados, o que permite ao controlador retornar respostas apropriadas para o cliente.
+     * A conversão para ProductDTO é feita para encapsular os dados e garantir que apenas as informações necessárias sejam expostas.
+     *
+     * @param query a string de pesquisa
+     * @return uma lista de produtos que correspondem à pesquisa
      */
     public List<ProductDTO> search(String query) {
         try {
@@ -170,14 +172,16 @@ public class ProductService {
                     .collect(Collectors.toList());
         } catch (Exception e) {
             logger.error("Error searching products: {}", e.getMessage());
-            throw new RuntimeException("Failed to search products");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to search products", e);
         }
     }
 
-    /*
+    /**
      * Converte um objeto Product para um objeto ProductDTO.
-     * Isso é feito para encapsular os dados e garantir que apenas as informações
-     * necessárias sejam expostas.
+     * Isso é feito para encapsular os dados e garantir que apenas as informações necessárias sejam expostas.
+     *
+     * @param product o produto a ser convertido
+     * @return o ProductDTO resultante
      */
     private ProductDTO mapToDTO(Product product) {
         return new ProductDTO(

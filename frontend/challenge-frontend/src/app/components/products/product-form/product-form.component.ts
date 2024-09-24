@@ -165,16 +165,21 @@ export class ProductFormComponent implements OnInit {
     formData.append('name', formValue.name);
     formData.append('description', formValue.description);
     formData.append('price', formValue.price.toString());
+
     if (this.selectedFile) {
       formData.append('image', this.selectedFile);
+    } else if (this.isEditMode && this.data.product?.image) {
+      formData.append('image', this.data.product.image);
     }
 
     if (formValue.id) {
       formData.append('id', formValue.id.toString());
+      console.log('id', formValue.id);
     }
 
     return formData;
   }
+
 
   /**
    * Converte o preço para um número
@@ -193,9 +198,9 @@ export class ProductFormComponent implements OnInit {
    * @private
    */
   private updateExistingProduct(formData: FormData): Observable<any> {
-    return this.productService.updateProduct(formData);
+    const productId = this.data.product.id;
+    return this.productService.updateProduct(productId, formData);
   }
-
   /**
    * Cria um novo produto
    * @param {FormData} formData - Dados do formulário a serem enviados ao servidor

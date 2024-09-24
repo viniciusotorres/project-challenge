@@ -81,8 +81,8 @@ export class ProductService {
    *   Em ambos os casos, exibe uma notificação.
    * @param formData
    */
-  updateProduct(formData: FormData): Observable<any> {
-    return this.http.put(`${this.url}/products/update`, formData).pipe(
+  updateProduct(id: number, formData: FormData): Observable<any> {
+    return this.http.put(`${this.url}/products/${id}`, formData).pipe(
       tap(() => this.notificationService.showSuccess('Produto atualizado com sucesso')),
       catchError(error => {
         const errorMessage = `Falha ao atualizar produto: ${error.status} - ${error.message}`;
