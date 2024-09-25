@@ -3,7 +3,6 @@ package com.example.challenge_backend.controller;
 import com.example.challenge_backend.dto.product.ProductDTO;
 import com.example.challenge_backend.dto.response.ResponseProductDTO;
 import com.example.challenge_backend.service.ProductService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +46,7 @@ public class ProductController {
             @RequestParam("image") MultipartFile image) throws IOException {
 
         ProductDTO productDTO = convertToProductDTO(name, price, description, image);
-        ProductDTO createdProduct = productService.create(productDTO);
+        ProductDTO createdProduct = productService.create(productDTO, image);
         URI location = URI.create("/api/products/" + createdProduct.id());
         return ResponseEntity.created(location).body(createdProduct);
     }
@@ -103,7 +102,7 @@ public class ProductController {
         }
 
         ProductDTO productDTO = new ProductDTO(id, name, price, description, imageBytes);
-        ProductDTO updatedProduct = productService.update(id, productDTO);
+        ProductDTO updatedProduct = productService.update(id, productDTO, image);
         return ResponseEntity.ok(new ResponseProductDTO(updatedProduct, "Produto atualizado com sucesso"));
     }
     /**
