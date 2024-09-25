@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -50,7 +51,11 @@ public class ProductService {
      * @return o produto criado
      */
     @Transactional
-    public ProductDTO create(@Valid ProductDTO productDTO) {
+    public ProductDTO create(@Valid ProductDTO productDTO, MultipartFile image) {
+        if (!isValidImageType(image)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid image type. Only JPG, JPEG, and PNG are allowed.");
+        }
+
         try {
             Product product = new Product();
             product.setName(productDTO.name());
@@ -113,7 +118,10 @@ public class ProductService {
      * @return o produto atualizado
      */
     @Transactional
-    public ProductDTO update(Long id, @Valid ProductDTO productDTO) {
+    public ProductDTO update(Long id, @Valid ProductDTO productDTO, MultipartFile image) {
+        if (!isValidImageType(image)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid image type. Only JPG, JPEG, and PNG are allowed.");
+        }
         try {
             Product product = productRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Product not found for this id: " + id));
@@ -191,5 +199,19 @@ public class ProductService {
                 product.getDescription(),
                 product.getImage()
         );
+    }
+
+    /**
+     * Verifica se a imagem enviada é do tipo JPG, JPEG ou PNG.
+     *
+     * @param image a imagem a ser verificada
+     * @return true se a imagem for do tipo permitido, false caso contrário
+     */
+    private boolean isValidImageType(MultipartFile image) {
+        if (image == null) {
+            return false;
+        }
+        String contentType = image.getContentType();
+        return contentType.equals("image/jpeg") || contentType.equals("image/jpg") || contentType.equals("image/png");
     }
 }

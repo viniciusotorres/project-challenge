@@ -53,12 +53,14 @@ export class ProductFormComponent implements OnInit {
    * @param {ProductService} productService - Serviço para manipulação de produtos
    * @param {FormBuilder} fb - Serviço de construção de formulários
    * @param {MatDialogRef<ProductFormComponent>} dialogRef - Referência ao diálogo
+   * @param notificationService
    * @param {any} data - Dados passados para o diálogo
    */
   constructor(
     private productService: ProductService,
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<ProductFormComponent>,
+    private notificationService: NotificationService,
     @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
@@ -101,10 +103,16 @@ export class ProductFormComponent implements OnInit {
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.isEditMode = false;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.handleFileSelection(file);
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!validTypes.includes(file.type)) {
+      this.handleInvalidFileType();
+      return;
     }
+
+    this.handleFileSelection(file);
   }
 
   /**
@@ -120,6 +128,18 @@ export class ProductFormComponent implements OnInit {
   }
 
   /**
+   * Lida com tipos de arquivos inválidos
+   * @private
+   */
+  private handleInvalidFileType(): void {
+    this.notificationService.showWarning('Tipo de arquivo inválido. Permitido apenas JPG e PNG.');
+    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  }
+
+  /**
    * Lê o arquivo selecionado e define a fonte da imagem
    * @param {File} file - Arquivo selecionado
    * @private
@@ -131,6 +151,7 @@ export class ProductFormComponent implements OnInit {
     };
     reader.readAsDataURL(file);
   }
+
 
   /**
    * Fecha o diálogo
